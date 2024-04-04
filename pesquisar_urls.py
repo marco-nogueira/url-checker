@@ -1,4 +1,5 @@
 import csv
+import os
 from tkinter import *
 from tkinter import messagebox
 import requests
@@ -20,8 +21,16 @@ def pesquisar_urls():
         messagebox.showerror("Erro", "Erro HTTP: " + str(response.status_code))
         return
 
+    if os.path.isdir('results') == False:
+        dirTemp = './results'
+        try:
+            os.mkdir(dirTemp)
+        except OSError:
+            os.rmdir(dirTemp)
+            os.mkdir(dirTemp)
+
     # Salvar o HTML de retorno em um arquivo
-    with open("retorno.html", "wb") as f:
+    with open("results/retorno.html", "wb") as f:
         f.write(response.content)
 
     # Localizar todas as URLs relacionadas ao texto href
@@ -31,7 +40,7 @@ def pesquisar_urls():
     # Criar um arquivo CSV com as URLs
     # Remover URLs duplicadas
     url_set = set()
-    with open("lista-de-urls.csv", "w", newline="") as f:
+    with open("results/lista-de-urls.csv", "w", newline="") as f:
         writer = csv.writer(f)
         for url in urls:
             if url not in url_set:
@@ -39,7 +48,7 @@ def pesquisar_urls():
                 url_set.add(url)
 
     # Exibir mensagem de sucesso e fechar a janela
-    messagebox.showinfo("Sucesso", "Pesquisa finalizada! As URLs foram salvas no arquivo lista-de-urls.csv. Foram encontradas {} URLs.".format(len(url_set)))
+    messagebox.showinfo("Sucesso", "Pesquisa finalizada! As URLs foram salvas no arquivo lista-de-urls.csv, na pasta '/results'. Foram encontradas {} URLs.".format(len(url_set)))
     root.destroy()
 
 # Criar a interface gráfica
