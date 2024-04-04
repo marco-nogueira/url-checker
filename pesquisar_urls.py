@@ -1,5 +1,4 @@
 import csv
-import time
 from tkinter import *
 from tkinter import messagebox
 import requests
@@ -30,13 +29,17 @@ def pesquisar_urls():
     urls = [a["href"] for a in soup.find_all("a", href=True) if "http" in a["href"]]
 
     # Criar um arquivo CSV com as URLs
+    # Remover URLs duplicadas
+    url_set = set()
     with open("lista-de-urls.csv", "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["URL"])
-        writer.writerows(urls)
+        for url in urls:
+            if url not in url_set:
+                writer.writerow([url])
+                url_set.add(url)
 
     # Exibir mensagem de sucesso e fechar a janela
-    messagebox.showinfo("Sucesso", "Pesquisa finalizada! As URLs foram salvas no arquivo lista-de-urls.csv.")
+    messagebox.showinfo("Sucesso", "Pesquisa finalizada! As URLs foram salvas no arquivo lista-de-urls.csv. Foram encontradas {} URLs.".format(len(url_set)))
     root.destroy()
 
 # Criar a interface gráfica
