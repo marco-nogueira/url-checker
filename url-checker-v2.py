@@ -47,13 +47,46 @@ def pesquisar_urls():
                 writer.writerow([url])
                 url_set.add(url)
 
+    # Validar as URLs
+    validar_urls()
+
     # Exibir mensagem de sucesso e fechar a janela
     messagebox.showinfo("Sucesso", "Pesquisa finalizada! As URLs foram salvas no arquivo lista-de-urls.csv, na pasta '/results'. Foram encontradas {} URLs.".format(len(url_set)))
     root.destroy()
 
+def validar_urls():
+
+    global urls_acessadas
+    global urls_com_erro
+    urls_acessadas = 0
+    urls_com_erro = 0
+
+    with open("results/lista-de-urls.csv", "r") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            url = row[0]
+            validar_acesso_url(url)
+
+    print(f"Foram verificadas {urls_acessadas + urls_com_erro} URLs, {urls_acessadas} funcionando e {urls_com_erro} com erro. ")
+
+def validar_acesso_url(url):
+
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            global urls_acessadas
+            urls_acessadas += 1
+            print(f"Funcionamento correto para a URL: {url} [VALIDADOS = {urls_acessadas}]")
+        else:
+            global urls_com_erro
+            urls_com_erro += 1
+            print(f"Erro ao tentar acessar a URL: {url} [ERROS = {urls_com_erro}]")
+    except requests.exceptions.ConnectionError:
+        print(f"Erro de conexão ao tentar acessar a URL: {url}")
+
 # Criar a interface gráfica
 root = Tk()
-root.title("Pesquisar URLs")
+root.title("Pesquisar e Validar URLs")
 
 # Criar a caixa de texto para a URL
 url_label = Label(text="Digite a URL:")
@@ -63,7 +96,7 @@ url_entry = Entry(width=50)
 url_entry.pack()
 
 # Criar o botão para iniciar a pesquisa
-pesquisar_button = Button(text="Pesquisar URLs do domain name", command=pesquisar_urls)
+pesquisar_button = Button(text="Pesquisar e Validar URLs", command=pesquisar_urls)
 pesquisar_button.pack()
 
 # Iniciar a interface gráfica
