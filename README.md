@@ -1,12 +1,18 @@
 # url-checker
-url checking program.
 
-Pesquise um nome de domínio que já existe, por exemplo, https://google.com.br e valida as demais URLs da página.
+Este aplicativo serve para verificar o funcionamento das urls de uma página.
 
-Execute no prompt de comando, um arquivo por vez:
-$ python pesquisar_urls.py
-$ python validar_urls.py
+Após o python e as bibliotecas necessárias ao uso estiverem instaladas.
 
-OU
+Abrir o prompt de comando e executar o arquivo:
 
-Dê dois cliques nos arquivos, um por vez, respectivamente.
+- python url_checker-v3.py
+  
+Então abrirá uma janela para inserir a URL que quer pesquisar, por exemplo https://google.com.br.
+
+O sistema vai varrer a página e identificar todos os links/urls que existem na página. Criará e salvará a lista no arquivo lista_de_urls.csv na pasta resultados.
+
+No próximo passo o sistema vai verificar, tentar abrir cada link/url salvo na lista_de_urls.csv.
+
+O resultado do teste de tentativa de acesso é escrito no arquivo urls_status_report.txt.
+

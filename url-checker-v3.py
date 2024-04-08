@@ -21,8 +21,8 @@ def pesquisar_urls():
         messagebox.showerror("Erro", "Erro HTTP: " + str(response.status_code))
         return
 
-    if os.path.isdir('results') == False:
-        dirTemp = './results'
+    if os.path.isdir('resultados') == False:
+        dirTemp = './resultados'
         try:
             os.mkdir(dirTemp)
         except OSError:
@@ -30,7 +30,7 @@ def pesquisar_urls():
             os.mkdir(dirTemp)
 
     # Salvar o HTML de retorno em um arquivo
-    with open("results/retorno.html", "wb") as f:
+    with open("resultados/retorno.html", "wb") as f:
         f.write(response.content)
 
     # Localizar todas as URLs relacionadas ao texto href
@@ -40,7 +40,7 @@ def pesquisar_urls():
     # Criar um arquivo CSV com as URLs
     # Remover URLs duplicadas
     url_set = set()
-    with open("results/lista-de-urls.csv", "w", newline="") as f:
+    with open("resultados/lista-de-urls.csv", "w", newline="") as f:
         writer = csv.writer(f)
         for url in urls:
             if url not in url_set:
@@ -51,7 +51,7 @@ def pesquisar_urls():
     validar_urls()
 
     # Exibir mensagem de sucesso e fechar a janela
-    messagebox.showinfo("Sucesso", "Pesquisa finalizada! As URLs foram salvas no arquivo lista-de-urls.csv, na pasta '/results'. Foram encontradas {} URLs.".format(len(url_set)))
+    messagebox.showinfo("\nSucesso", "Pesquisa finalizada! As URLs foram salvas no arquivo lista-de-urls.csv, na pasta '/resultados'. Foram encontradas {} URLs.".format(len(url_set)))
     root.destroy()
 
 def validar_urls():
@@ -61,7 +61,7 @@ def validar_urls():
     urls_acessadas = 0
     urls_com_erro = 0
 
-    with open("results/lista-de-urls.csv", "r") as f:
+    with open("resultados/lista-de-urls.csv", "r") as f:
         reader = csv.reader(f)
         for row in reader:
             url = row[0]
@@ -76,27 +76,35 @@ def validar_acesso_url(url):
         if response.status_code == 200:
             global urls_acessadas
             urls_acessadas += 1
-            print(f"Funcionamento correto para a URL: {url} [VALIDADOS = {urls_acessadas}]")
+            resultado_do_teste = f"[VALIDADOS = {urls_acessadas}] Funcionamento correto para a URL: {url}"
+            print(resultado_do_teste)
         else:
             global urls_com_erro
             urls_com_erro += 1
-            print(f"Erro ao tentar acessar a URL: {url} [ERROS = {urls_com_erro}]")
+            resultado_do_teste = f"[ERROS = {urls_com_erro}] Erro ao tentar acessar a URL: {url}"
+            print(resultado_do_teste)
     except requests.exceptions.ConnectionError:
         print(f"Erro de conexão ao tentar acessar a URL: {url}")
+    
+    # # Criar um arquivo TXT com o resultado das tentativas de acesso das URLs
+    with open("resultados/urls_status_report.txt", "a") as arquivo:
+        arquivo.write(f"\n{resultado_do_teste}")
 
 # Criar a interface gráfica
 root = Tk()
+root.geometry("400x200")
 root.title("Pesquisar e Validar URLs")
 
 # Criar a caixa de texto para a URL
 url_label = Label(text="Digite a URL:")
 url_label.pack()
 
-url_entry = Entry(width=50)
+url_entry = Entry(width=100, borderwidth=2)
+url_entry.insert(0, "https://www.google.com.br")
 url_entry.pack()
 
 # Criar o botão para iniciar a pesquisa
-pesquisar_button = Button(text="Pesquisar e Validar URLs", command=pesquisar_urls)
+pesquisar_button = Button(root, text="Validar links do site", pady=50, padx=50, command=pesquisar_urls)
 pesquisar_button.pack()
 
 # Iniciar a interface gráfica
